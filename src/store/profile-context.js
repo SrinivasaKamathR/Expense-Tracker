@@ -20,7 +20,7 @@ export const ProfileContextProvider = (props) => {
         {
           method: "POST",
           body: JSON.stringify({
-            idToken: localStorage.getItem("idToken"),
+            idToken: JSON.parse(localStorage.getItem("idToken")).idToken,
           }),
           headers: {
             "Content-Type": "application/json",
