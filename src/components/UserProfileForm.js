@@ -1,4 +1,4 @@
-import React, { useRef, useContext } from "react";
+import React, { useRef, useContext, useEffect, useCallback } from "react";
 
 import classes from "./UserProfileForm.module.css";
 import loginContext from "../store/login-context";
@@ -20,7 +20,7 @@ const UserProfileForm = () => {
             body: JSON.stringify({
               idToken: localStorage.getItem("idToken"),
               displayName: nameRef.current.value,
-              imageUrl: imageRef.current.value,
+              photoUrl: imageRef.current.value,
               returnSecureToken: true,
             }),
             headers: {
@@ -29,13 +29,11 @@ const UserProfileForm = () => {
           }
         );
 
+        const data = await res.json();
+
         if (res.ok) {
-          nameRef.current.value = "";
-          imageRef.current.value = "";
-          const data = await res.json();
-          console.log(data);
+          //console.log(data);
         } else {
-          const data = await res.json();
           throw data.error;
         }
       } catch (err) {
@@ -43,6 +41,42 @@ const UserProfileForm = () => {
       }
     }
   };
+
+  const getUserProfile = useCallback(async () => {
+    try {
+      // console.log('called');
+      const res = await fetch(
+        "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAQs7bI7d64xgfIx12vFZcTVaM1c4_k08A",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            idToken: localStorage.getItem("idToken"),
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await res.json();
+      if (res.ok) {
+        nameRef.current.value = data.users[0].displayName;
+        imageRef.current.value = data.users[0].photoUrl;
+      } else {
+        throw data.error;
+      }
+    } catch (err) {
+      console.log(err.message);
+    }
+  }, []);
+
+  const { isLoggedIn } = loginCtx;
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      getUserProfile();
+    }
+  }, [getUserProfile, isLoggedIn]);
 
   return (
     <form className={classes.form} onSubmit={profileSubmitHandler}>
