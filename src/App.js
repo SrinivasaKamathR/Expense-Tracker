@@ -4,11 +4,12 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import "./App.css";
 import UserProfile from "./pages/UserProfile";
-import Product from "./pages/Product";
+import Expenses from "./pages/Expenses";
 import About from "./pages/About";
 import { useContext } from "react";
 import loginContext from "./store/login-context";
 import { ProfileContextProvider } from "./store/profile-context";
+import ForgotPassword from "./components/ForgotPassword";
 function App() {
   const loginCtx = useContext(loginContext);
   return (
@@ -18,9 +19,9 @@ function App() {
         <Route path="/" exact element={<Navigate replace to="/home" />}></Route>
         <Route path="/home" element={<Home />}></Route>
         {loginCtx.isLoggedIn ? (
-          <Route path="/" exact element={<Product />} />
+          <Route path="/expenses" element={<Expenses />} />
         ) : (
-          <Route path="/product" element={<Navigate replace to="/login" />} />
+          <Route path="/expenses" element={<Navigate replace to="/login" />} />
         )}
 
         <Route path="/about" element={<About />} />
@@ -39,6 +40,7 @@ function App() {
         )}
 
         <Route path="/login" element={<Login />} />
+        <Route path="/resetpassword" element={<ForgotPassword />} />
       </Routes>
     </>
   );

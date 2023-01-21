@@ -27,10 +27,10 @@ const MainNavigation = () => {
           </li>
           <li>
             <NavLink
-              to="/product"
+              to="/expenses"
               className={({ isActive }) => (isActive ? classes.active : "")}
             >
-              Products
+              Expenses
             </NavLink>
           </li>
           <li>

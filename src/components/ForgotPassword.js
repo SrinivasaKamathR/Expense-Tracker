@@ -1,13 +1,14 @@
 import React, { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import classes from "./ForgotPassword.module.css";
 
-const ForgotPassword = (props) => {
+const ForgotPassword = () => {
   const email = useRef();
+  const navigate = useNavigate();
 
   const resetPasswordHandler = async (event) => {
     event.preventDefault();
-
     try {
       const res = await fetch(
         "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyAQs7bI7d64xgfIx12vFZcTVaM1c4_k08A",
@@ -25,7 +26,7 @@ const ForgotPassword = (props) => {
 
       const data = await res.json();
       if (res.ok) {
-        props.changedPassword();
+        navigate("/login");
       } else {
         throw data.error;
       }
