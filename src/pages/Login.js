@@ -1,5 +1,6 @@
 import React, { useState, useRef, useContext } from "react";
 import { Link } from "react-router-dom";
+import LoginMessage from "../components/LoginMessage";
 import loginContext from "../store/login-context";
 
 import classes from "./Login.module.css";
@@ -62,19 +63,7 @@ const Login = () => {
     }
   };
   if (loginCtx.isLoggedIn) {
-    return (
-      <div className={classes.mainProfile}>
-        <span className={classes.welcome}>
-          Welcome to Expense Tracker...!!!
-        </span>
-        <span className={classes.profile}>
-          <span>Your profile is incomplete.</span>
-          <Link to="/profile">
-            <b> Complete now</b>
-          </Link>
-        </span>
-      </div>
-    );
+    return <LoginMessage />;
   }
 
   return (
@@ -89,7 +78,9 @@ const Login = () => {
             ref={confirmPasswordRef}
           />
         )}
-        <button type="submit">{haveAccount ? "Login" : "Sign Up"}</button>
+        <button type="submit">
+          {haveAccount ? "Login" : "Create Account"}
+        </button>
         {haveAccount ? <Link to="/">Forgot Password</Link> : ""}
       </form>
       <div className={classes.login} onClick={accountHandler}>
