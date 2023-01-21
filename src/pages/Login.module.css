@@ -28,7 +28,10 @@
       border-radius: 5px;
       background-color: rgb(6, 129, 166);
   }
-  
+
+  .form p {
+    cursor: pointer;
+  }
   .login {
     box-sizing: border-box;
     width: 400px;
@@ -36,4 +39,7 @@
     margin: auto;
     padding: 10px;
     cursor: pointer;
+  }
+  .login {
+    text-align: center;
   }

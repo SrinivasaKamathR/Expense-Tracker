@@ -1,5 +1,5 @@
 import React, { useState, useRef, useContext } from "react";
-import { Link } from "react-router-dom";
+import ForgotPassword from "../components/ForgotPassword";
 import LoginMessage from "../components/LoginMessage";
 import loginContext from "../store/login-context";
 
@@ -7,6 +7,7 @@ import classes from "./Login.module.css";
 
 const Login = () => {
   const [haveAccount, setHaveAccount] = useState(true);
+  const [forgotPassword, setForgotPassword] = useState(false);
   const emailRef = useRef();
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
@@ -62,8 +63,18 @@ const Login = () => {
       alert(err.message);
     }
   };
+
+  const forgotPasswordHandler = () => {
+    setForgotPassword((preState) => {
+      return !preState;
+    });
+  };
+
   if (loginCtx.isLoggedIn) {
     return <LoginMessage />;
+  }
+  if (forgotPassword) {
+    return <ForgotPassword changedPassword={forgotPasswordHandler} />;
   }
 
   return (
@@ -81,7 +92,11 @@ const Login = () => {
         <button type="submit">
           {haveAccount ? "Login" : "Create Account"}
         </button>
-        {haveAccount ? <Link to="/">Forgot Password</Link> : ""}
+        {haveAccount ? (
+          <p onClick={forgotPasswordHandler}>Forgot Password?</p>
+        ) : (
+          ""
+        )}
       </form>
       <div className={classes.login} onClick={accountHandler}>
         {haveAccount
