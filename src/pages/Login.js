@@ -51,7 +51,7 @@ const Login = () => {
       if (res.ok) {
         const data = await res.json();
         console.log("User Logged-In");
-        localStorage.setItem("idToken", data.idToken);
+        localStorage.setItem("idToken", JSON.stringify(data));
         setHaveAccount(true);
         loginCtx.login();
       } else {
