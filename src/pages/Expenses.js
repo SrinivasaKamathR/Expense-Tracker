@@ -1,14 +1,19 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 
 import classes from "./Expenses.module.css";
 import ExpenseItems from "../components/ExpenseItems";
+import { useDispatch, useSelector } from "react-redux";
+import { expenseAction } from "../store/expenseSlice";
 
 const Expenses = () => {
-  const [expenseList, setExpenseList] = useState([]);
-
+  useEffect(() => {
+    console.log("entered");
+  }, []);
   const amountRef = useRef();
   const typeRef = useRef();
   const descriptionRef = useRef();
+  const dispatch = useDispatch();
+  const expenseList = useSelector((state) => state.expense.expenses);
   const email = JSON.parse(localStorage.getItem("idToken")).email;
   const emailUrl = email.replace(/[@.]/g, "");
 
@@ -34,20 +39,12 @@ const Expenses = () => {
       const data = await res.json();
       if (res.ok) {
         const newData = {
+          id: data.name,
           amount: amountRef.current.value,
           type: typeRef.current.value,
           description: descriptionRef.current.value,
         };
-        setExpenseList((preState) => {
-          const updatedList = [
-            ...preState,
-            {
-              id: data.name,
-              ...newData,
-            },
-          ];
-          return updatedList;
-        });
+        dispatch(expenseAction.addExpense([newData]));
         amountRef.current.value = "";
         typeRef.current.value = "";
         descriptionRef.current.value = "";
@@ -62,47 +59,48 @@ const Expenses = () => {
   // showing expenses when page is refreshed
   useEffect(() => {
     const getItems = async () => {
-      try {
-        const res = await fetch(
-          `https://expense-tract-default-rtdb.firebaseio.com/${emailUrl}expenses.json`
-        );
+      if (expenseList.length === 0) {
+        try {
+          const res = await fetch(
+            `https://expense-tract-default-rtdb.firebaseio.com/${emailUrl}expenses.json`
+          );
 
-        const data = await res.json();
-        if (res.ok) {
-          const retrievedData = [];
+          const data = await res.json();
+          if (res.ok) {
+            const retrievedData = [];
 
-          for (let key in data) {
-            retrievedData.push({ id: key, ...data[key] });
+            for (let key in data) {
+              retrievedData.push({ id: key, ...data[key] });
+            }
+            dispatch(expenseAction.addExpense(retrievedData));
+          } else {
+            throw data.error;
           }
-          setExpenseList(retrievedData);
-        } else {
-          throw data.error;
+        } catch (err) {
+          console.log(err.message);
         }
-      } catch (err) {
-        console.log(err.message);
       }
     };
     getItems();
-  }, [emailUrl]);
+  }, [emailUrl, dispatch, expenseList.length]);
 
   // editing the expense
   const edit = (item) => {
-    setExpenseList((preState) => {
-      const updatedItemList = preState.filter((data) => data.id !== item.id);
-      return updatedItemList;
-    });
+    const updatedExpense = expenseList.filter(
+      (expense) => expense.id !== item.id
+    );
 
     amountRef.current.value = item.amount;
     typeRef.current.value = item.type;
     descriptionRef.current.value = item.description;
+
+    dispatch(expenseAction.removeExpense(updatedExpense));
   };
 
   // deleting the expense
   const deleted = (id) => {
-    setExpenseList((preState) => {
-      const updatedItemList = preState.filter((data) => data.id !== id);
-      return updatedItemList;
-    });
+    const updatedExpense = expenseList.filter((expense) => expense.id !== id);
+    dispatch(expenseAction.removeExpense(updatedExpense));
   };
   const newExpenseList = expenseList.map((item) => (
     <ExpenseItems

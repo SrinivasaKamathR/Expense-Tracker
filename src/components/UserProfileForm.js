@@ -1,10 +1,12 @@
-import React, { useRef, useContext, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import classes from "./UserProfileForm.module.css";
-import profileContext from "../store/profile-context";
 import { useNavigate } from "react-router-dom";
 
 const UserProfileForm = () => {
-  const profileCtx = useContext(profileContext);
+  const [profile, setProfile] = useState({
+    name: "",
+    photoUrl: "",
+  });
   const nameRef = useRef();
   const photoRef = useRef();
   const navigate = useNavigate();
@@ -19,7 +21,7 @@ const UserProfileForm = () => {
         {
           method: "POST",
           body: JSON.stringify({
-            idToken: localStorage.getItem("idToken"),
+            idToken: JSON.parse(localStorage.getItem("idToken")).idToken,
             displayName: nameRef.current.value,
             photoUrl: photoRef.current.value,
             returnSecureToken: true,
@@ -31,9 +33,13 @@ const UserProfileForm = () => {
       );
 
       const data = await res.json();
+      console.log(data);
       if (res.ok) {
         navigate("/home");
-        profileCtx.update();
+        setProfile({
+          name: data.displayName,
+          photoUrl: data.photoUrl,
+        });
       } else {
         throw data.error;
       }
@@ -41,9 +47,42 @@ const UserProfileForm = () => {
       console.log(err.message);
     }
   };
+
+  const updateProfile = async () => {
+    try {
+      const res = await fetch(
+        "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAQs7bI7d64xgfIx12vFZcTVaM1c4_k08A",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            idToken: JSON.parse(localStorage.getItem("idToken")).idToken,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await res.json();
+      if (res.ok && data.users[0].displayName && data.users[0].photoUrl) {
+        setProfile({
+          name: data.users[0].displayName,
+          photoUrl: data.users[0].photoUrl,
+        });
+      } else {
+        throw data.error;
+      }
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
   useEffect(() => {
-    nameRef.current.value = profileCtx.name;
-    photoRef.current.value = profileCtx.photo;
+    updateProfile();
+  }, []);
+  useEffect(() => {
+    nameRef.current.value = profile.name;
+    photoRef.current.value = profile.photo;
   });
 
   return (
