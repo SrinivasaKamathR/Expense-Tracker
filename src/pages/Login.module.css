@@ -30,6 +30,11 @@
       border-radius: 5px;
   }
 
+  .form button:active {
+    transform: scale(0.95);
+  }
+  
+
   .form a{
     display: block;
     text-decoration: none;

@@ -57,3 +57,6 @@
     background-color: #89764a;
     border: none;
   }
+  .formBody button:active {
+    transform: scale(0.95);
+  }

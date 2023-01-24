@@ -21,3 +21,7 @@
     margin: 0 5px 0 5px;
     font-weight: bold;
   }
+
+  .button button:active {
+    transform: scale(0.95);
+  }

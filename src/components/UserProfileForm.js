@@ -48,38 +48,38 @@ const UserProfileForm = () => {
     }
   };
 
-  const updateProfile = async () => {
-    try {
-      const res = await fetch(
-        "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAQs7bI7d64xgfIx12vFZcTVaM1c4_k08A",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            idToken: JSON.parse(localStorage.getItem("idToken")).idToken,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const data = await res.json();
-      if (res.ok && data.users[0].displayName && data.users[0].photoUrl) {
-        setProfile({
-          name: data.users[0].displayName,
-          photoUrl: data.users[0].photoUrl,
-        });
-      } else {
-        throw data.error;
-      }
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
-
   useEffect(() => {
+    const updateProfile = async () => {
+      try {
+        const res = await fetch(
+          "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAQs7bI7d64xgfIx12vFZcTVaM1c4_k08A",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              idToken: JSON.parse(localStorage.getItem("idToken")).idToken,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const data = await res.json();
+        if (res.ok && data.users[0].displayName && data.users[0].photoUrl) {
+          setProfile({
+            name: data.users[0].displayName,
+            photoUrl: data.users[0].photoUrl,
+          });
+        } else {
+          throw data.error;
+        }
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
     updateProfile();
   }, []);
+
   useEffect(() => {
     nameRef.current.value = profile.name;
     photoRef.current.value = profile.photo;
